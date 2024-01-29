@@ -1,6 +1,13 @@
 import React, {useEffect, useState} from 'react'
+import { Link, useNavigate } from 'react-router-dom';
+
+
 
 function Form() {
+
+  const navigate = useNavigate()
+
+
   const initialFormData = {
     name: '',
     username: '',
@@ -24,10 +31,21 @@ function Form() {
 
   // Load form data from local storage on component mount
   useEffect(() => {
+    const shouldFetchData = JSON.parse(localStorage.getItem('shouldFetchData'));
+
+    // Check if there is a flag in local storage to determine whether to fetch data
+    if (shouldFetchData) {
     const savedFormData = JSON.parse(localStorage.getItem('formData'));
     if (savedFormData) {
       setFormData(savedFormData);
     }
+    
+    if (savedFormData) {
+      setFormData(savedFormData);
+    }
+  } else {
+    // If the flag is not set or false, do not fetch data automatically
+  }
   }, []);
 
   const handleChange = (e) => {
@@ -72,8 +90,15 @@ function Form() {
       // Save form data to local storage
       localStorage.setItem('formData', JSON.stringify(formData));
 
-      // Handle your form submission logic here
-      console.log('Form submitted successfully!', formData);
+      // Set a flag to indicate that data should be fetched on the next page load
+      localStorage.setItem('shouldFetchData', JSON.stringify(true));
+
+      
+      // Navigate to the entertainment page only if all fields are filled and checkbox is checked
+      if (Object.values(newErrors).every((error) => !error)) {
+        navigate('/entertainment');
+      }
+    
     }
   };
 
@@ -108,7 +133,7 @@ function Form() {
 
         {/* Form */}
         {/* Form with input fields */}
-        <form className="mt-14 w-full px-40" onSubmit={handleSubmit}>
+        <form className="mt-14 w-full px-40" onSubmit={handleSubmit} >
           <div className="mb-4">
             <input
               type="text"
@@ -178,14 +203,17 @@ function Form() {
             <p className="text-red-500 text-sm mt-1">{errors.agree}</p>
           </div>
 
-          <div className="my-10 flex justify-center">
-            <button
-              type="submit"
-              className="text-white bg-[#72D873] py-1 rounded-3xl w-full text-2xl font-bold"
-            >
-              Click
-            </button>
-          </div>
+          
+            <div className="my-10 flex justify-center">
+              <button
+                type="submit"
+                className="text-white bg-[#72D873] py-1 rounded-3xl w-full text-2xl font-bold"
+              >
+              Submit
+              </button>
+            </div>
+            
+          
 
           <p className="text-red-500 text-sm mt-1">{errors.general}</p>
 
@@ -214,4 +242,4 @@ function Form() {
 }
   
 
-export default Form
+export default Form;
